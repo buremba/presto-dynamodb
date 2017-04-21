@@ -34,17 +34,14 @@ public class DynamodbModule
     private final String connectorId;
     private final TypeManager typeManager;
 
-    public DynamodbModule(String connectorId, TypeManager typeManager)
+    public DynamodbModule(String connectorId)
     {
         this.connectorId = requireNonNull(connectorId, "connector id is null");
-        this.typeManager = requireNonNull(typeManager, "typeManager is null");
     }
 
     @Override
     public void configure(Binder binder)
     {
-        binder.bind(TypeManager.class).toInstance(typeManager);
-
         binder.bind(DynamodbConnector.class).in(Scopes.SINGLETON);
         binder.bind(DynamodbConnectorId.class).toInstance(new DynamodbConnectorId(connectorId));
         binder.bind(DynamodbMetadata.class).in(Scopes.SINGLETON);
@@ -52,26 +49,5 @@ public class DynamodbModule
         binder.bind(DynamodbSplitManager.class).in(Scopes.SINGLETON);
         binder.bind(DynamodbRecordSetProvider.class).in(Scopes.SINGLETON);
         configBinder(binder).bindConfig(DynamodbConfig.class);
-    }
-
-    public static final class TypeDeserializer
-            extends FromStringDeserializer<Type>
-    {
-        private final TypeManager typeManager;
-
-        @Inject
-        public TypeDeserializer(TypeManager typeManager)
-        {
-            super(Type.class);
-            this.typeManager = requireNonNull(typeManager, "typeManager is null");
-        }
-
-        @Override
-        protected Type _deserialize(String value, DeserializationContext context)
-        {
-            Type type = typeManager.getType(parseTypeSignature(value));
-            checkArgument(type != null, "Unknown type %s", value);
-            return type;
-        }
     }
 }
