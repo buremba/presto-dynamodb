@@ -29,19 +29,12 @@ import static java.util.Objects.requireNonNull;
 public class DynamodbPlugin
         implements Plugin
 {
-    private TypeManager typeManager;
     private Map<String, String> optionalConfig = ImmutableMap.of();
 
     @Override
     public synchronized void setOptionalConfig(Map<String, String> optionalConfig)
     {
         this.optionalConfig = ImmutableMap.copyOf(requireNonNull(optionalConfig, "optionalConfig is null"));
-    }
-
-    @Inject
-    public synchronized void setTypeManager(TypeManager typeManager)
-    {
-        this.typeManager = typeManager;
     }
 
     public synchronized Map<String, String> getOptionalConfig()
@@ -53,7 +46,7 @@ public class DynamodbPlugin
     public synchronized <T> List<T> getServices(Class<T> type)
     {
         if (type == ConnectorFactory.class) {
-            return ImmutableList.of(type.cast(new DynamodbConnectorFactory(typeManager, getOptionalConfig())));
+            return ImmutableList.of(type.cast(new DynamodbConnectorFactory(getOptionalConfig())));
         }
         return ImmutableList.of();
     }
