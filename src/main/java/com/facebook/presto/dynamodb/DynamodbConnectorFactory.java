@@ -29,12 +29,10 @@ import static java.util.Objects.requireNonNull;
 public class DynamodbConnectorFactory
         implements ConnectorFactory
 {
-    private final TypeManager typeManager;
     private final Map<String, String> optionalConfig;
 
-    public DynamodbConnectorFactory(TypeManager typeManager, Map<String, String> optionalConfig)
+    public DynamodbConnectorFactory(Map<String, String> optionalConfig)
     {
-        this.typeManager = requireNonNull(typeManager, "typeManager is null");
         this.optionalConfig = ImmutableMap.copyOf(requireNonNull(optionalConfig, "optionalConfig is null"));
     }
 
@@ -57,7 +55,7 @@ public class DynamodbConnectorFactory
         try {
             // A plugin is not required to use Guice; it is just very convenient
             Bootstrap app = new Bootstrap(
-                    new DynamodbModule(connectorId, typeManager));
+                    new DynamodbModule(connectorId));
 
         Injector injector = app
                     .strictConfig()
